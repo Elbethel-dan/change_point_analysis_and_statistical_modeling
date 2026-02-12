@@ -28,6 +28,92 @@ Establish a robust analytical foundation by understanding the data, defining the
 Task 1 provides the analytical and conceptual groundwork for subsequent change point modeling and interactive visualization in later stages of the project.
 
 ----
+## Task 2: Bayesian Change Point Detection
+
+### Objective
+Identify statistically significant structural breaks in Brent oil price returns using probabilistic programming, moving beyond subjective event selection to allow the data to reveal its own regime shifts.
+
+### Key Activities
+- Prepared daily log return series from raw Brent price data (1987–2022).
+
+- Implemented a Bayesian change point model using PyMC with a discrete uniform prior over all possible switch points.
+
+- Modeled two distinct mean regimes (μ₁, μ₂) with a switch function selecting the appropriate parameter based on temporal index.
+
+- Ran MCMC sampling with 4 chains, 2,000 draws each, and 1,000 warmup iterations.
+
+- Verified convergence using r_hat statistics and examined posterior distributions.
+
+- Mapped the posterior change point index back to calendar date for business interpretation.
+
+- Quantified the magnitude and direction of the estimated structural shift.
+
+### Outputs
+
+- Posterior distribution of the change point (tau) with 94% high density interval.
+
+- Estimated mean daily returns before and after the detected break.
+
+- Convergence diagnostics and trace plots.
+
+- change_point_results.json containing all model parameters for API consumption.
+
+- Visualization of the price series with the Bayesian change point overlaid.
+
+**Key Finding:** The model detected a change point around Day 4,395 (approximately 2004) , though the wide credible interval confirms that Brent oil returns lack a single, dominant structural break. This reinforces that the market is better characterized by multiple, event-driven dislocations rather than one monolithic regime shift.
+
+
+----
+## Task 3: Full-Stack Interactive Dashboard
+
+### Objective
+Transform the statistical analysis into an accessible, interactive decision-support tool by building a full-stack web application with Flask backend and React frontend.
+
+### Key Activities
+**Backend (Flask):**
+
+- Developed REST API with CORS support for cross-origin requests.
+
+- Created /api/prices endpoint serving Brent historical data with dynamic date range filtering.
+
+- Created /api/events endpoint serving the curated geopolitical event catalog.
+
+- Created /api/changepoint endpoint serving pre-computed Bayesian model results from JSON.
+
+- Created /api/volatility endpoint computing 30-day rolling log-return volatility.
+
+- Implemented efficient data loading using pandas with datetime parsing.
+
+**Frontend (React):**
+
+- Built component-based architecture with dedicated UI modules.
+
+- Implemented api.js service layer using Axios for all backend communication.
+
+- Created PriceChart.jsx using Recharts to visualize price trends, event markers, and change point reference lines.
+
+- Developed Filters.jsx for interactive date range selection.
+
+- Built MetricsPanel.jsx displaying Bayesian statistics including mean before/after and estimated percentage shift.
+
+- Connected all components in App.js with React hooks (useState, useEffect) for state management.
+
+### Outputs
+
+- Fully functional Flask API on port 5000.
+
+- Responsive React dashboard on port 3000.
+
+- Interactive price chart with change point annotation.
+
+- Event-ready architecture for future event marker integration.
+
+- Clean separation of concerns between data, logic, and presentation layers.
+
+**Business Value:** The dashboard enables investors, policymakers, and analysts to explore structural breaks in Brent oil prices dynamically, filter by date ranges, and immediately visualize how Bayesian change point detection aligns with historical geopolitical events.
+
+
+----
 
 ## How to Reproduce This Project
 
@@ -46,4 +132,18 @@ Task 1 provides the analytical and conceptual groundwork for subsequent change p
         python -m venv venv
         source venv/bin/activate   # On Windows: venv\\Scripts\\activate
         pip install -r requirements.txt
+    ```
+
+3. Run the Flask API server
+    ```bash
+        cd backend
+        python app.py
+
+    ```
+
+4. Navigate to the frontend directory
+    ```bash
+        cd ../frontend
+        npm install
+        npm start
     ```
